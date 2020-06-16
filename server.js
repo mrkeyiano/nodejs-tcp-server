@@ -60,6 +60,9 @@ server.on('connection', function(sock) {
 
 });
 
+
+let data_id = "requestId_" + makeid(5) + new Date().getTime();
+
 client.connect({
     port: clientPort,
     host: clientHost,
