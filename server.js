@@ -3,23 +3,21 @@
 require('events').EventEmitter.prototype._maxListeners = 0;
 
 const net = require('net');
-const port = '43666';
+const port = '44666';
 const host = '0.0.0.0';
-const fepHost = '10.154.0.12';
-const fepPort = '43666';
-var intervalConnect = false;
-var timeout = 0;
+const clientHost = '127.0.0.1';
+const clientPort = '43666';
 
 var demo_data = "�0421F23E0495ABE081200000004204000022165321550400409731312000000000000000061510555673737716504008092304042000000C00000000C000000000653215506111111245321550400409731=23042210000032982606822110300022100000000000022HAGGAI  MFB  ATM  GARKI     ABUJA   LANG56600440210100003298260020073737706151055560000053215500000111111000000000000000000000000C00000000C0000000010002395301701551120151114C0020013646420144000000000100003298260PAT2src     PAT2snk     737377737377UBPGroup    301000032982602020061501252218Postilion:MetaData278211MediaTotals111212MediaBatchNr111217AdditionalEmvTags111214AdditionalInfo111211MediaTotals3116<MediaTotals><Totals><Amount>0</Amount><Currency>000</Currency><MediaClass>Cards</MediaClass></Totals></MediaTotals>212MediaBatchNr173736441217AdditionalEmvTags3500<AdditionalEmvTags><EmvTag><TagId>50</TagId><TagValue>4465626974204D617374657243617264</TagValue></EmvTag><EmvTag><TagId>81</TagId><TagValue>0000C350</TagValue></EmvTag><EmvTag><TagId>9F4C</TagId><TagValue>0000000000000000</TagValue></EmvTag><EmvTag><TagId>9F45</TagId><TagValue>0000</TagValue></EmvTag><EmvTag><TagId>5F36</TagId><TagValue>00</TagValue></EmvTag><EmvTag><TagId>5F34</TagId><TagValue>00</TagValue></EmvTag><EmvTag><TagId>9B</TagId><TagValue>6000</TagValue></EmvTag></AdditionalEmvTags>214AdditionalInfo3447<AdditionalInfo><Transaction><OpCode>AGABHAIA</OpCode><BufferB>08136900929</BufferB><BufferC>1774691015</BufferC><CfgExtendedTrxType>8505</CfgExtendedTrxType><CfgReceivingInstitutionIDCode>62805112345</CfgReceivingInstitutionIDCode></Transaction><Download><ATMConfigID>5006</ATMConfigID><AtmAppConfigID>5006</AtmAppConfigID><LoadsetGroup>FEP Wincor EMV</LoadsetGroup><DownloadApp>QT3_DOWNLOAD_WESTERNUNION</DownloadApp></Download></AdditionalInfo>07PAT2snk";
-
+var demo_data2 = "s0200F23E04D5A9E08120000000000400002216532155040040973131200000000000000006161524027373771650400809230404200000012C00000000C000000000653215506111111245321550400409731=230422100000329828722110300022100000000000022HAGGAI  MFB  ATM  GARKI     ABUJA   LANG5660041510010000329828710002395301701551120151114C0020013416000140000000000100003298287PAT2src     PAT2snk     737377737377UBPGroup    2020061601252211MediaTotals3116<MediaTotals><Totals><Amount>0</Amount><Currency>000</Currency><MediaClass>Cards</MediaClass></Totals></MediaTotals>218Postilion:MetaData278211MediaTotals111212MediaBatchNr111217AdditionalEmvTags111214AdditionalInfo111212MediaBatchNr173736441217AdditionalEmvTags3500<AdditionalEmvTags><EmvTag><TagId>50</TagId><TagValue>4465626974204D617374657243617264</TagValue></EmvTag><EmvTag><TagId>81</TagId><TagValue>0000C350</TagValue></EmvTag><EmvTag><TagId>9F4C</TagId><TagValue>0000000000000000</TagValue></EmvTag><EmvTag><TagId>9F45</TagId><TagValue>0000</TagValue></EmvTag><EmvTag><TagId>5F36</TagId><TagValue>00</TagValue></EmvTag><EmvTag><TagId>5F34</TagId><TagValue>00</TagValue></EmvTag><EmvTag><TagId>9B</TagId><TagValue>6000</TagValue></EmvTag></AdditionalEmvTags>214AdditionalInfo3447<AdditionalInfo><Transaction><OpCode>AGABHAIA</OpCode><BufferB>08136900929</BufferB><BufferC>1774691015</BufferC><CfgExtendedTrxType>8505</CfgExtendedTrxType><CfgReceivingInstitutionIDCode>62805112345</CfgReceivingInstitutionIDCode></Transaction><Download><ATMConfigID>5006</ATMConfigID><AtmAppConfigID>5006</AtmAppConfigID><LoadsetGroup>FEP Wincor EMV</LoadsetGroup><DownloadApp>QT3_DOWNLOAD_WESTERNUNION</DownloadApp></Download></AdditionalInfo>";
 
 const server = net.createServer();
-const fepClient = new net.Socket();
+const client = new net.Socket();
 
 
 
 server.listen(port, host, () => {
-    console.log('Mastercard router server is running on port ' + port + '.');
+    console.log('TCP server is running on port ' + port + '.');
 });
 
 let sockets = [];
@@ -33,126 +31,13 @@ server.on('connection', function(sock) {
 
 
     sock.on('data', function(data) {
-
-
-        let data_id = "requestId_" + makeid(5) + new Date().getTime();
-        let received = "";
-        received += data.toString();
-        console.log(data_id +':'+ sock.remoteAddress + ':' +sock.remotePort+ ' says: ' + data);
-
-
-
-        const messages = received.split("\n");
-
-        if (messages.length > 0) {
-            console.log(data_id +": initiating request to forward data from postbridge to fep server");
-
-            for (let message of messages) {
-                if (message !== "") {
-
-                  //  if (received.toString().endsWith('07PAT2snk')) {
-
-
-
-                        console.log(data_id +": initiating connection to fep server");
-                        fepClient.connect({
-                            port: fepPort,
-                            host: fepHost,
-                        });
-
-
-                        fepClient.write(received.toString() +"\n");
-                        console.log(data_id +": data sent to fep server, waiting for response.");
-
-
-
-                  //  }
-                    received = ""
-                }
-            }
-        }
-
-
-
-
-        fepClient.on('connect', function() {
-            console.log(data_id +": connected to patricia pay fep running on ip " + fepHost + " and port " +fepPort);
-        });
-
-        //wait for response and forward back to postbridge
-
-        fepClient.on('data', function(data) {
-            console.log(data_id +": patricia pay fep server responded to request");
-            console.log(data_id +": forwarding data to unitybank postbridge");
-            //write data to unitybank postbridge
-
-         //   if (data.toString().endsWith('07PAT2snk')) {
-                sockets.forEach(function (sock) {
-
-                    sock.write(data+ "\n");
-
-                });
-                console.log(data_id + ": request forwarded to unitybank postbridge");
-
-          //  }
-
-            if (data.toString().endsWith('exit')) {
-                fepClient.destroy();
-
-            }
-
-            fepClient.destroy();
-
-
-
-        });
-
-        //catch errors connecting to fep
-        fepClient.on('error', function(ex) {
-
-
-            console.log(data_id +": error connecting to fep client: " +ex);
-
-            fepClient.destroy();
-
-
-        });
-
-
-        fepClient.on('close', function() {
-
-            console.log(data_id +": fep server connection closed");
-
-            fepClient.removeAllListeners();
-            fepClient.destroy();
-
-
-        });
-
-        fepClient.on('end', function() {
-
-            console.log(data_id +": fep server connection ended");
-
-
-        });
-
-        sock.destroy();
-
-
-
-
-
-
-
-
-
-
+        
         // Write the data back to all the connected, the client will receive it as data from the server
-        // sockets.forEach(function(sock, index, array) {
-        //
-        //
-        //     sock.write(sock.remoteAddress + ':' + sock.remotePort + " said " + data + '\n');
-        // });
+        sockets.forEach(function(sock, index, array) {
+
+
+            sock.write(sock.remoteAddress + ':' + sock.remotePort + " said " + data + '\n');
+        });
     });
 
 
@@ -175,6 +60,58 @@ server.on('connection', function(sock) {
 
 });
 
+client.connect({
+    port: clientPort,
+    host: clientHost,
+});
+
+
+console.log(data_id + "data to send: " +demo_data2);
+client.write(demo_data2 +"\n");
+console.log(data_id +": data sent to socket server, waiting for response.");
+
+
+
+
+
+client.on('connect', function() {
+    console.log("connected to socket server running on ip " + clientHost + " and port " +clientPort);
+});
+
+client.on('data', function(data) {
+    console.log("response from socket server: " +data);
+
+});
+
+client.on('error', function(ex) {
+
+
+    console.log("error connecting to socket server: " +ex);
+
+    client.destroy();
+
+
+});
+
+
+client.on('close', function() {
+
+    console.log("socket server connection closed");
+
+    client.removeAllListeners();
+    client.destroy();
+
+
+});
+
+client.on('end', function() {
+
+    console.log("socket server connection ended");
+
+
+});
+
+
 
 
 function makeid(length) {
@@ -186,9 +123,6 @@ function makeid(length) {
     }
     return result;
 }
-
-
-
 
 
 
