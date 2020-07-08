@@ -82,7 +82,27 @@ client.on('connect', function() {
 });
 
 client.on('data', function(data) {
-    console.log("response from socket server: " +data);
+
+    let received = "";
+    received += data.toString();
+
+
+    const messages = received.split("\n");
+
+    if (messages.length > 0) {
+
+        for (let message of messages) {
+            if (message !== "") {
+
+
+                console.log("response from socket server: " +received.toString());
+
+
+                received = ""
+            }
+        }
+    }
+
 
 });
 
