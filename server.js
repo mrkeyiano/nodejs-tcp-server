@@ -95,7 +95,7 @@ client.on('data', function(data) {
             if (message !== "") {
 
 
-                console.log("response from socket server: " +received.toString());
+                console.log("response from socket server: " +message);
 
 
                 received = ""
