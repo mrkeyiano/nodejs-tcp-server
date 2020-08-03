@@ -105,7 +105,7 @@ client.on('data', function(data) {
                 });
 
 
-                console.log(data_id + " data to send to php-sock: " +data);
+                console.log(data_id + " data to send to php-sock: " +received);
                 client.write(data +"\n");
 
 
