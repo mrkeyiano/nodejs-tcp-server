@@ -109,7 +109,7 @@ client.on('data', function(data) {
 
 
                 console.log(data_id + " data to send to php-sock: " +data);
-                client2.write(data +"\n");
+                client2.write(data);
 
 
 
