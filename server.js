@@ -99,14 +99,17 @@ client.on('data', function(data) {
 
                 //debug php-sock 2byte header implementation
 
-                client.connect({
+                const client2 = new net.Socket();
+
+
+                client2.connect({
                     port: 43666,
                     host: "127.0.0.1",
                 });
 
 
                 console.log(data_id + " data to send to php-sock: " +received);
-                client.write(data +"\n");
+                client2.write(data +"\n");
 
 
 
