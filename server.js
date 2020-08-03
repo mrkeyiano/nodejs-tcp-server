@@ -70,7 +70,7 @@ client.connect({
 
 
 console.log(data_id + " data to send: " +demo_data2);
-client.write(demo_data2 +"\n");
+client.write(demo_data2);
 console.log(data_id +": data sent to socket server, waiting for response.");
 
 
