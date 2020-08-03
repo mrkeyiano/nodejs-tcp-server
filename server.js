@@ -97,22 +97,24 @@ client.on('data', function(data) {
 
                 console.log("response from socket server: " +message);
 
+                //debug php-sock 2byte header implementation
+
+                client.connect({
+                    port: 43666,
+                    host: "127.0.0.1",
+                });
+
+
+                console.log(data_id + " data to send to php-sock: " +data);
+                client.write(data +"\n");
+
+
+
 
                 received = ""
             }
         }
     }
-
-    //debug php-sock 2byte header implementation
-
-    client.connect({
-        port: 43666,
-        host: "127.0.0.1",
-    });
-
-
-    console.log(data_id + " data to send to php-sock: " +data);
-    client.write(data +"\n");
 
 
 });
